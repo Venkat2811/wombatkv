@@ -1,0 +1,48 @@
+WombatKV
+Copyright 2026 Venkat Raman and WombatKV Contributors
+
+This product includes software developed by third parties under the
+Apache License, Version 2.0 (LICENSE for the full text).
+
+The following third-party components are bundled or referenced by the
+WombatKV workspace; each is the property of its respective copyright
+holders and is used under the terms of its own license:
+
+  SlateDB
+    https://github.com/slatedb/slatedb
+    Apache License 2.0
+    Backs the L1 metadata index in wombatkv-radix.
+
+  foyer
+    https://github.com/foyer-rs/foyer
+    Apache License 2.0
+    Underpins the in-process L0 / L1 hybrid cache in wombatkv-node.
+
+  myelon
+    https://github.com/Venkat2811/myelon
+    Apache License 2.0
+    Cross-process SHM ring transport behind wombatkv-daemon's SHM mode.
+
+  crc32c (Rust crate)
+    https://crates.io/crates/crc32c
+    Apache License 2.0 OR MIT
+    Hardware-dispatched CRC32C primitive exposed via the C ABI.
+
+  blake3 (Rust crate)
+    https://crates.io/crates/blake3
+    Apache License 2.0 OR Apache License 2.0 with LLVM-exception
+    Content-addressed chain hashing.
+
+  compio
+    https://github.com/compio-rs/compio
+    Apache License 2.0 OR MIT
+    Per-shard async runtime for the TCP / HTTP daemon listeners.
+
+  rkyv
+    https://github.com/rkyv/rkyv
+    MIT
+    Zero-copy serialization at the wire envelope boundary.
+
+This NOTICE file is informational and does not modify the LICENSE.
+Distribution of WombatKV in derivative works should preserve this
+NOTICE per Apache-2.0 Section 4(d).
