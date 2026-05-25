@@ -1,0 +1,5 @@
+{"trial": 1, "native_ms": 7847, "wombatkv_ms": 124, "speedup": 63.3, "notes": ""}
+{"trial": 2, "native_ms": 7835, "wombatkv_ms": 102, "speedup": 76.8, "notes": ""}
+{"trial": 3, "native_ms": 8079, "wombatkv_ms": 290, "speedup": 27.9, "notes": "S3 GET hiccup; s3_get_us spike in trial log"}
+{"trial": 4, "native_ms": 8191, "wombatkv_ms": 99, "speedup": 82.7, "notes": "best trial: WombatKV-warm floor"}
+{"trial": 5, "native_ms": 7929, "wombatkv_ms": 108, "speedup": 73.4, "notes": ""}

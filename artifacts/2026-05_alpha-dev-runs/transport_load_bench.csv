@@ -1,0 +1,9 @@
+platform,mode,clients,payload_bytes,throughput_ops_s,put_p50_us,get_p50_us
+M3 Max,daemon-shm,1,1024,310,3488,1729
+M3 Max,daemon-shm,4,1024,452,6282,4163
+M3 Max,daemon-shm,8,1024,679,10464,6623
+Linux x86_64,daemon-shm,1,1024,155,7418,4070
+Linux x86_64,daemon-shm,4,1024,390,9593,7370
+Linux x86_64,daemon-shm,8,1024,422,18258,13597
+Linux x86_64,daemon-tcp-bridge16,16,4096,5091,3889,
+M3 Max,daemon-tcp-bridge16,16,4096,3723,4992,

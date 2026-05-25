@@ -1,0 +1,13 @@
+mode,ctx_tokens,native_cold_ms,native_warm_ms,wombatkv_cold_ms,wombatkv_warm_ms,speedup,source
+native,512,3815,3796,,,1.01,wombatkv_sweep/native.csv
+native,1024,5837,5685,,,1.03,wombatkv_sweep/native.csv
+native,2048,9679,10010,,,0.97,wombatkv_sweep/native.csv
+embedded,512,,,3854,560,6.88,wombatkv_sweep/embedded.csv
+embedded,1024,,,5959,561,10.62,wombatkv_sweep/embedded.csv
+embedded,2048,,,20228,581,34.8,wombatkv_sweep/embedded.csv
+daemon-shm,512,,,9236,558,16.53,wombatkv_sweep/daemon-shm.csv
+daemon-shm,1024,,,9768,629,15.52,wombatkv_sweep/daemon-shm.csv
+daemon-shm,2048,,,39767,805,49.38,wombatkv_sweep/daemon-shm.csv
+daemon-tcp,512,,,11736,612,19.17,wombatkv_sweep/daemon-tcp.csv
+daemon-tcp,1024,,,9362,559,16.73,wombatkv_sweep/daemon-tcp.csv
+daemon-tcp,2048,,,35402,2322,15.24,wombatkv_sweep/daemon-tcp.csv
