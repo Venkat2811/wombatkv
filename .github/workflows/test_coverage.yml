@@ -1,0 +1,47 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  coverage:
+    name: cargo-llvm-cov to Codecov
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.95.0"
+          components: llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      # Linux fd limits default to 1024, foyer integration tests open more.
+      # Bump before invoking llvm-cov to mirror the gate in ci.yml.
+      - name: Bump fd limit
+        run: |
+          ulimit -n 65536
+          echo "ulimit -n = $(ulimit -n)"
+      # `--workspace --lib` keeps the run fast (no integration tests).
+      # `--exclude wombatkv-bench` skips the perf-bench harness; it pulls
+      # docker-dependent paths that don't run on plain ubuntu-latest.
+      # wombatkv-dst is kept in the cargo run (its tests exercise the
+      # chaos primitives) but codecov.yml drops it from the report since
+      # the harness's own coverage isn't a useful quality signal.
+      - name: cargo llvm-cov (workspace, lib only)
+        run: |
+          ulimit -n 65536
+          cargo llvm-cov --workspace --exclude wombatkv-bench --lib --lcov --output-path lcov.info
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+          fail_ci_if_error: false
