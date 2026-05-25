@@ -1,0 +1,84 @@
+[package]
+name = "wombatkv-cabi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords.workspace = true
+categories.workspace = true
+description = "C ABI over WombatKV. Produces libwombatkv.dylib + wombatkv.h so C/C++ engines (ds4, llama.cpp, custom) integrate without a Rust path dependency. Headline ABI surface for the substrate."
+documentation = "https://docs.rs/wombatkv-cabi"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+bytes = "1"
+blake3 = "1"
+# Hardware-accelerated CRC32C (Castagnoli polynomial). The crate
+# dispatches at runtime to x86_64 SSE4.2, ARMv8.1 CRC32, or a software
+# table fallback, same primitive across every target the engines we
+# integrate run on. Exposed via the C ABI as wmbt_kv_crc32c{,_append}
+# so engines (ds4, vLLM, SGLang, ...) don't each reinvent it.
+crc32c = "0.6"
+wombatkv-node   = { path = "../wombatkv-node",   version = "0.1.0-alpha.pre1.0" }
+wombatkv-store  = { path = "../wombatkv-store",  version = "0.1.0-alpha.pre1.0" }
+wombatkv-daemon = { path = "../wombatkv-daemon", version = "0.1.0-alpha.pre1.0" }
+wombatkv-radix  = { path = "../wombatkv-radix",  version = "0.1.0-alpha.pre1.0" }
+
+[lib]
+name = "wombatkv"
+crate-type = ["cdylib", "rlib"]
+
+[dev-dependencies]
+tempfile = "3"
+blake3 = "1"
+
+# wombatkv-cabi is the FFI boundary; every `extern "C"` entry point
+# requires `unsafe`. We can't use `[lints] workspace = true` here because
+# we need to override `unsafe_code` from `forbid` to `deny`. So the
+# workspace allows are mirrored locally, keep in sync with
+# `[workspace.lints.clippy]` in the root Cargo.toml.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+missing_safety_doc = "allow"
+doc_markdown = "allow"
+must_use_candidate = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
+needless_pass_by_value = "allow"
+too_many_arguments = "allow"
+too_many_lines = "allow"
+similar_names = "allow"
+items_after_statements = "allow"
+manual_let_else = "allow"
+format_push_string = "allow"
+field_reassign_with_default = "allow"
+unreadable_literal = "allow"
+unused_self = "allow"
+unnecessary_wraps = "allow"
+collapsible_if = "allow"
+collapsible_else_if = "allow"
+# Rust 1.95+ pedantic; allow workspace-wide (mirror of root Cargo.toml).
+unnecessary_debug_formatting = "allow"
+doc_lazy_continuation = "allow"
+doc_overindented_list_items = "allow"
+# FFI surface: every `pub extern "C" fn` taking `*const T` or `*mut T`
+# triggers this. The functions present a safe-from-Rust API (null
+# checks + error codes); marking each signature `unsafe fn` would
+# break Rust callers that already wrap them through this crate's
+# safe surface.
+not_unsafe_ptr_arg_deref = "allow"
