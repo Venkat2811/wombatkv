@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  checks:
+    name: ${{ matrix.os }} / rust ${{ matrix.toolchain }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # Pin the MSRV: `rust-toolchain.toml` also says 1.95.0, but matrix-pinning
+        # surfaces toolchain drift immediately rather than implicitly.
+        toolchain: ["1.95.0"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Rust ${{ matrix.toolchain }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          components: rustfmt, clippy
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.os }}-${{ matrix.toolchain }}
+      # Linux file-descriptor limits default to 1024, which is below what
+      # foyer's hybrid cache opens during the integration tests. Bump to
+      # 65536 before invoking the gate so contributors don't trip the
+      # "Too many open files (os error 24)" failure path.
+      - name: Bump fd limit (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          ulimit -n 65536
+          echo "ulimit -n = $(ulimit -n)"
+      - name: Run CI gate (fmt + lint + test)
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            ulimit -n 65536
+          fi
+          make ci
