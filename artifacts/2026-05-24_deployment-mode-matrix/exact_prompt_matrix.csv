@@ -1,0 +1,22 @@
+scenario,restart_policy,mode,n_trials,prompt_chars,turn1_ttft_ms_p50,turn2_ttft_ms_p50,native_turn2_ms_p50,speedup_vs_native,status,notes
+canonical_long_prompt,preserved,native,5,5059,7594.5,24.2,24.2,1.00,BASELINE,ds4 kvdisk intact + warmup-primed
+canonical_long_prompt,preserved,embedded_local,5,5059,7785.9,79.7,24.2,0.30,LOSS,native kvdisk wins on exact same prompt
+canonical_long_prompt,preserved,daemon_shm,5,5059,10386.5,146.8,24.2,0.16,LOSS,daemon adds IPC tax on top
+canonical_long_prompt,wiped,native,5,5059,7548.2,6986.7,6986.7,1.00,BASELINE,kvdisk wiped between turns
+canonical_long_prompt,wiped,native_cold,5,5059,7716.9,7050.6,6986.7,0.99,BASELINE,kvdisk fully disabled (true cold)
+canonical_long_prompt,wiped,embedded_local,5,5059,7738.4,77.9,6986.7,89.7,WIN,canonical headline
+canonical_long_prompt,wiped,embedded_remote,5,5059,8749.7,82.1,6986.7,85.1,WIN,LAN MinIO surprisingly close to loopback
+canonical_long_prompt,wiped,daemon_shm,5,5059,10420.4,191.7,6986.7,36.4,WIN,IPC overhead but still strong
+canonical_long_prompt,wiped,daemon_tcp_local,5,5059,10266.6,148.9,6986.7,46.9,WIN,loopback TCP
+canonical_long_prompt,wiped,daemon_http_local,5,5059,10345.9,203.1,6986.7,34.4,WIN,loopback HTTP
+canonical_long_prompt,wiped,daemon_tcp_remote,5,5059,13067.1,5317.0,6986.7,1.31,NEUTRAL,daemon-side block fetch 3-3.6s dominates
+canonical_long_prompt,wiped,daemon_http_remote,5,5059,13377.5,5424.8,6986.7,1.29,NEUTRAL,same daemon-side bottleneck
+canonical_long_prompt,same_process,native,3,5059,7547.9,80.7,80.7,1.00,BASELINE,engine cache handles it
+canonical_long_prompt,same_process,embedded_local,3,5059,8672.7,327.8,80.7,0.25,LOSS,prefetcher overhead with nothing to restore
+canonical_long_prompt,same_process,daemon_shm,3,5059,11418.9,5932.1,80.7,0.014,LOSS,daemon catastrophic when not needed
+canonical_long_prompt,same_process,daemon_tcp_local,3,5059,10202.7,5741.9,80.7,0.014,LOSS,same daemon tax
+canonical_long_prompt,same_process,daemon_http_local,3,5059,10252.4,6168.4,80.7,0.013,LOSS,same daemon tax
+sharegpt_exact_replay,wiped,native,8,,5851.2,5329.5,5329.5,1.00,BASELINE,8 distinct public prompts
+sharegpt_exact_replay,wiped,native_cold,8,,5954.4,5379.3,5329.5,0.99,BASELINE,kvdisk fully disabled
+sharegpt_exact_replay,wiped,embedded_local,8,,6077.9,78.1,5329.5,68.2,WIN,WIN generalizes beyond single prompt
+sharegpt_exact_replay,wiped,embedded_remote,8,,7016.2,94.9,5329.5,56.2,WIN,LAN MinIO across 8 prompts

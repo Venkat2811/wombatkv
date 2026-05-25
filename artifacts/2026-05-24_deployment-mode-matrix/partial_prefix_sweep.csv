@@ -1,0 +1,31 @@
+restart_policy,mode,shared_chars,suffix_chars,n_trials,native_turn2_ms_p50,wombat_turn2_ms_p50,speedup_vs_native,status,notes
+preserved,native,10000,256,2,5651.1,,1.00,BASELINE,kvdisk preserved
+preserved,native,10000,2048,2,8510.6,,1.00,BASELINE,
+preserved,native,10000,8192,2,63157.9,,1.00,BASELINE,large-suffix preserved native
+preserved,native_cold,10000,256,1,5434.8,,0.96,NEUTRAL,kvdisk disabled; comparable to warm native at small suffix
+preserved,native_cold,10000,2048,1,9828.1,,0.87,NEUTRAL,
+preserved,native_cold,10000,8192,1,49886.4,,1.27,SMALL_WIN,unexpectedly faster than warm native at large suffix
+preserved,embedded_local,10000,256,2,5651.1,1812.8,3.12,SMALL_WIN,WIN vs native even with kvdisk intact
+preserved,embedded_local,10000,2048,2,8510.6,3475.2,2.45,SMALL_WIN,
+preserved,embedded_local,10000,8192,2,63157.9,14197.1,4.45,SMALL_WIN,suffix amplifies the savings
+preserved,daemon_shm,10000,256,1,5651.1,14063.7,0.40,LOSS,daemon-shm partial-prefix preserved LOSS
+preserved,daemon_shm,10000,2048,1,8510.6,29324.7,0.29,LOSS,
+preserved,daemon_tcp_local,10000,256,1,5651.1,2863.6,1.97,SMALL_WIN,daemon-TCP local beats native at small suffix
+preserved,daemon_tcp_local,10000,2048,1,8510.6,4980.7,1.71,SMALL_WIN,
+preserved,daemon_http_local,10000,256,1,5651.1,12122.1,0.47,LOSS,daemon-HTTP local LOSS preserved
+preserved,daemon_http_local,10000,2048,1,8510.6,11215.3,0.76,LOSS,
+wiped,native,10000,256,2,15023.6,,1.00,BASELINE,
+wiped,native,10000,2048,2,19840.9,,1.00,BASELINE,
+wiped,native,10000,8192,2,66610.3,,1.00,BASELINE,
+wiped,native_cold,10000,256,1,19467.7,,0.77,LOSS,kvdisk disabled SLOWER than warm
+wiped,native_cold,10000,2048,1,19355.8,,1.03,NEUTRAL,
+wiped,native_cold,10000,8192,1,32102.1,,2.07,SMALL_WIN,native_cold faster at large suffix wiped (different prefetch path)
+wiped,embedded_local,10000,256,2,15023.6,1993.1,7.54,WIN,strongest non-restart claim at small suffix
+wiped,embedded_local,10000,2048,2,19840.9,6097.5,3.25,SMALL_WIN,
+wiped,embedded_local,10000,8192,2,66610.3,15044.5,4.43,SMALL_WIN,
+wiped,daemon_shm,10000,256,1,15023.6,7544.3,1.99,SMALL_WIN,daemon-shm wiped beats native at small suffix
+wiped,daemon_shm,10000,2048,1,19840.9,9946.2,1.99,SMALL_WIN,
+wiped,daemon_tcp_local,10000,256,1,15023.6,6049.1,2.48,SMALL_WIN,daemon-TCP local wiped
+wiped,daemon_tcp_local,10000,2048,1,19840.9,22936.8,0.87,NEUTRAL,degrades at larger suffix
+wiped,daemon_http_local,10000,256,1,15023.6,11041.2,1.36,NEUTRAL,
+wiped,daemon_http_local,10000,2048,1,19840.9,9824.9,2.02,SMALL_WIN,
