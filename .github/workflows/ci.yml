@@ -17,7 +17,7 @@ jobs:
         # surfaces toolchain drift immediately rather than implicitly.
         toolchain: ["1.95.0"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - name: Install Rust ${{ matrix.toolchain }}
