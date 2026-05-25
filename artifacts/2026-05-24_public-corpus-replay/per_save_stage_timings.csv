@@ -1,0 +1,5 @@
+scenario,mode,save_entry_to_exit_ms_p50,vs_embedded_save,notes
+sharegpt_round_robin,embedded_local,322.6,1.00,baseline (in-process save path)
+sharegpt_round_robin,daemon_tcp_local,2145.5,6.65,daemon TCP save 6.6x slower
+sharegpt_round_robin,daemon_shm,2315.2,7.18,daemon SHM save 7.2x slower (no transport excuse)
+sharegpt_round_robin,daemon_http_local,2581.0,8.00,daemon HTTP save 8x slower

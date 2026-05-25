@@ -1,0 +1,10 @@
+scenario,mode,n_trials,requests,convs,turn1_ttft_p50_ms,later_turn_ttft_p50_ms,ttft_p50_ms,ttft_p95_ms,total_p50_ms,wall_ms,bucket_objects_p50,native_ttft_p50_ms,speedup_vs_native_ttft,status,notes
+sharegpt_round_robin,native,2,44,8,476.1,2864.2,2205.7,4013.9,3804.6,75438.1,0,2205.7,1.00,BASELINE,8 distinct ShareGPT conversations round-robin; n=2 trials in final pass
+sharegpt_round_robin,native_cold,2,44,8,731.0,2802.2,1958.1,5136.5,3582.3,82204.4,0,2205.7,1.13,NEUTRAL,kvdisk disabled; within noise on TTFT
+sharegpt_round_robin,embedded_local,2,44,8,677.8,3322.7,2250.2,4761.5,3925.6,107645.9,48,2205.7,0.98,NEUTRAL,~parity TTFT; wall 1.4x slower
+sharegpt_round_robin,daemon_shm,1,22,8,796.3,21415.6,5422.0,29141.6,8576.8,343746.3,146,2205.7,0.41,LOSS,save-path tax dominates on round-robin
+sharegpt_round_robin,daemon_tcp_local,1,22,8,592.0,19440.9,5274.3,32313.4,14641.5,328573.4,44,2205.7,0.42,LOSS,same save-path bottleneck
+sharegpt_round_robin,daemon_http_local,1,22,8,501.0,23945.3,4772.2,34567.5,9704.6,390949.9,44,2205.7,0.46,LOSS,HTTP save slowest
+gutenberg_multiround,native,1,18,6,45896.3,38087.9,40841.9,58039.2,53725.2,972788.3,0,40841.9,1.00,BASELINE,6 convs x 3 turns; ~12k-char first turn
+gutenberg_multiround,native_cold,1,18,6,65323.5,59430.0,60758.9,88456.4,75409.2,1437144.6,0,40841.9,0.67,LOSS,kvdisk-disabled is 1.49x SLOWER than warm native on TTFT
+gutenberg_multiround,embedded_local,1,18,6,22495.0,43772.8,29425.9,89682.1,31961.5,872611.9,50,40841.9,1.39,SMALL_WIN,real multi-turn WIN; turn1 2.04x WIN; total 1.68x WIN
