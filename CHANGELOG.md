@@ -11,7 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the versions follow [Semantic Versioning](https://semver.org/) with
 explicit pre-release tags such as `-alpha.N`, `-beta.N`, and `-rc.N`.
 
-## [0.1.0-alpha.pre1.0] (date TBD)
+## [0.1.0-alpha.pre1.0] - 2026-05-25
 
 Initial public launch of the `wombatkv-*` crates on crates.io.
 
