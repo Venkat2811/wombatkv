@@ -88,17 +88,48 @@ on Linux with the daemon-mode transport benches.
 
 ## How fast?
 
-ds4 + WombatKV vs ds4 native, M3 Max with MinIO. **89.7×** TTFT speedup
-on cross-restart with kvdisk wiped. **1.39×** on real Gutenberg
-multi-round QA. Native ds4 still wins same-process replay and live
-session-switch (0.10-0.30×).
+ds4 + WombatKV vs ds4 native, M3 Max with local Docker MinIO. All three
+charts below are from the single 2026-05-24 deployment-mode-matrix
+campaign (p50 TTFT, n=5 warmup-primed; canonical 5k-char Gutenberg
+prompt). No cross-campaign number-mixing in this section.
+
+### Cross-restart wiped, every WombatKV mode beats native cold-prefill
 
 <p align="center">
-  <img src="assets/2026-05-24_deployment-mode-matrix/exact-restart-wiped-by-mode.png" alt="Cross-restart wiped: native ds4 vs every WombatKV mode" width="900">
+  <img src="assets/2026-05-24_deployment-mode-matrix/exact-restart-wiped-by-mode.png" alt="Cross-restart wiped: native ds4 vs every WombatKV mode (canonical 5k-char prompt, n=5)" width="900">
 </p>
 
-All charts, three campaigns, methodology, honest losses, per-row
-breakdowns: **[BENCHMARKS.md](BENCHMARKS.md)** + **[`artifacts/`](artifacts/)**.
+Engine restarted between turn-1 and turn-2; kvdisk wiped, so native ds4
+must re-prefill from scratch. embedded_local hits **89.7×**; cross-host
+modes over WiFi LAN still hold **1.29-1.31×** parity-plus.
+
+### Even with ds4's kvdisk preserved, partial-prefix beats warm ds4
+
+<p align="center">
+  <img src="assets/2026-05-24_deployment-mode-matrix/partial-prefix-vs-native.png" alt="Partial-prefix sweep: native ds4 with kvdisk preserved vs WombatKV embedded_local (shared 10k-char prefix, 6 cells)" width="900">
+</p>
+
+Shared 10000-char prefix, 6 cells (3 suffix sizes × 2 restart policies).
+embedded_local wins **every cell**: **2.45-4.45×** even when native's
+kvdisk is preserved, **3.25-7.54×** when wiped. Not "cold cache vs warm"
+— wkv's partial-prefix lookup avoids the full re-prefill that ds4's
+kvdisk requires for a changed suffix.
+
+### Honest losses, where ds4 alone is still the right tool
+
+<p align="center">
+  <img src="assets/2026-05-24_deployment-mode-matrix/scenarios-losses.png" alt="Scenarios where WombatKV loses to native ds4: pi_review preserved, conversation_switch live" width="900">
+</p>
+
+Same campaign, the honest limits. Round-robin conversation switching
+(**0.10-0.13×**) and pi_review on one machine with kvdisk preserved
+(**0.65×**) are workloads where ds4's own kvdisk + warm engine already
+handle the state. WombatKV's save+load is pure overhead with nothing
+to amortize.
+
+All charts, three campaigns (including public-corpus ShareGPT + Gutenberg
+multi-round), full methodology, per-row breakdowns:
+**[BENCHMARKS.md](BENCHMARKS.md)** + **[`artifacts/`](artifacts/)**.
 
 ## Quickstart
 
