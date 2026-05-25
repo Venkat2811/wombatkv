@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it. Twitter/X: @venkat_systems"
+title: "WombatKV: object-storage-native KV cache system for LLM inference"
+type: software
+authors:
+  - given-names: Venkat
+    family-names: Raman
+repository-code: "https://github.com/Venkat2811/wombatkv"
+url: "https://github.com/Venkat2811/wombatkv"
+license: "Apache-2.0"
+date-released: 2026-05-23
+preferred-citation:
+  type: software
+  authors:
+    - given-names: Venkat
+      family-names: Raman
+  title: "WombatKV: object-storage-native KV cache system for LLM inference"
+  year: 2026
+  repository-code: "https://github.com/Venkat2811/wombatkv"
+  url: "https://github.com/Venkat2811/wombatkv"
