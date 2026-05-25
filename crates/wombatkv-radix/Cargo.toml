@@ -1,0 +1,51 @@
+[package]
+name = "wombatkv-radix"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords.workspace = true
+categories.workspace = true
+description = "In-RAM radix tree + SlateDB-backed L1 metadata index for WombatKV. Implements the longest-prefix lookup over content-addressed KV blocks per RFC 0008."
+documentation = "https://docs.rs/wombatkv-radix"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+# L1 SlateDB-backed MetadataIndex (RFC 0008).
+# Pinned to v0.13.0, first release with the cache-manager / segment-oriented
+# compaction set (RFC-0023/24/25) we lean on for §6 cold-bootstrap and §3
+# point-read performance budgets. Default features include `aws` (S3 backend)
+# and `foyer` (block cache); both are part of the production deployment path.
+slatedb = "=0.13.0"
+
+# Async runtime needed by slatedb. We embed a per-instance current-thread
+# runtime in SlateDbMetadataIndex so the sync MetadataIndex trait can keep
+# its existing signature (block_on at each call site). This mirrors the
+# embedded execution model in wombatkv-node.
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros"] }
+
+# BlockMeta carries BOTH serde and rkyv derives. The rkyv derives drive
+# the SlateDB on-disk value codec (RFC 0008 §3, §4e); serde stays for
+# back-compat with other paths (tests, debug dumps, future JSON inspection
+# tooling). The two are independent at the type level. BlockMeta remains
+# `Copy` because every field is POD + `Copy`. SlateDbMetadataIndex prefixes
+# every value with `b"v002"` to tag the rkyv schema so values written by
+# older builds (bincode under `b"v001"` ... if anyone had written one;
+# v001 was never shipped in main, so in practice on-disk migration is a
+# best-effort cold-miss → S3 refetch).
+bincode = "1"
+serde = { version = "1", features = ["derive"] }
+rkyv = { version = "0.8", features = ["bytecheck"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true
