@@ -1,0 +1,40 @@
+# Codecov configuration.
+#
+# Scopes coverage reporting to the published crates. Internal benchmark
+# and deterministic-simulation harnesses live in the workspace because
+# that's where they exercise their target crates, but they are not
+# part of the public API surface and their own coverage is not a
+# useful quality signal.
+#
+# Reference: https://docs.codecov.com/docs/codecovyml-reference
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto         # accept whatever the default branch has
+        threshold: 2%        # tolerate a 2% drop without flagging red
+        informational: true  # don't block merges on coverage drops yet
+    patch:
+      default:
+        target: auto
+        threshold: 2%
+        informational: true
+
+  range: "60...90"
+
+  ignore:
+    # Internal-only crates: live in this workspace because they
+    # exercise their target crates, but not part of the public surface.
+    - "crates/wombatkv-dst/**"
+    - "crates/wombatkv-bench/**"
+
+    # Generated mdbook output + docs / book sources are not tested code.
+    - "docs/book/**"
+    - "docs/**"
+
+# Quieter PR comments: only post if coverage actually moved.
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: true

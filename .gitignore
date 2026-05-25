@@ -1,0 +1,40 @@
+# Cargo + rustc artifacts
+debug
+target
+**/*.rs.bk
+*.pdb
+**/mutants.out*/
+
+# IDE / editor caches
+.idea/
+.vscode/
+.claude/
+.DS_Store
+**/.DS_Store
+
+# Secrets (never commit these by accident)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.pfx
+.secrets/
+
+# Vendored upstream engines (not part of the workspace; never published)
+__temp__
+
+# Misc local scratch
+**/.tmp/
+**/__pycache__/
+*.pyc
+llama.log
+
+# Bench artifacts — scripts may write here locally; never tracked.
+crates/**/bench_data/
+/bench_data/
+/wombatkv-bench/
+
+# mdBook output
+book/book/
