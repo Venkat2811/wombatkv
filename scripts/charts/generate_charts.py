@@ -361,15 +361,25 @@ def chart_mode_matrix_exact():
 
 def chart_mode_matrix_heatmap():
     rows = _read_csv(ARTIFACTS / CAMPAIGN_MODE_MATRIX / "exact_prompt_matrix.csv")
-    canonical = [r for r in rows if r["scenario"] == "canonical_long_prompt" and r["mode"] not in ("native", "native_cold")]
-    modes = sorted({r["mode"] for r in canonical})
+    canonical = [r for r in rows if r["scenario"] == "canonical_long_prompt"]
+    # Put native as the leftmost row so the 1.0x baseline is visually
+    # anchored in the grid instead of only implied by the color scale.
+    wkv_modes = sorted({r["mode"] for r in canonical if r["mode"] not in ("native", "native_cold")})
+    modes = ["native", "native_cold"] + wkv_modes
     policies = ["preserved", "wiped", "same_process"]
     grid = np.full((len(modes), len(policies)), np.nan)
     for r in canonical:
+        if r["mode"] not in modes:
+            continue
         i = modes.index(r["mode"])
         j = policies.index(r["restart_policy"])
-        grid[i, j] = float(r["speedup_vs_native"])
-    fig, ax = plt.subplots(figsize=(WIDTH_INCHES, 4.5))
+        val_str = r["speedup_vs_native"]
+        # Native vs native is 1.0 by definition; missing -> NaN
+        if r["mode"] == "native":
+            grid[i, j] = 1.0
+        elif val_str:
+            grid[i, j] = float(val_str)
+    fig, ax = plt.subplots(figsize=(WIDTH_INCHES, 5.0))
     from matplotlib.colors import LogNorm
     finite_vals = grid[np.isfinite(grid)]
     if finite_vals.size:
@@ -380,10 +390,24 @@ def chart_mode_matrix_heatmap():
     ax.set_xticks(range(len(policies)))
     ax.set_xticklabels(policies)
     ax.set_yticks(range(len(modes)))
-    ax.set_yticklabels(modes)
+    # Bold the two native rows so the baseline anchor is obvious.
+    yticklabels = []
+    for m in modes:
+        if m in ("native", "native_cold"):
+            yticklabels.append(f"{m} (baseline)")
+        else:
+            yticklabels.append(m)
+    ax.set_yticklabels(yticklabels)
+    for tick, m in zip(ax.get_yticklabels(), modes):
+        if m in ("native", "native_cold"):
+            tick.set_fontweight("bold")
     ax.set_xlabel("Restart policy")
     ax.set_ylabel("Mode")
-    ax.set_title("Deployment mode matrix - speedup vs native ds4 (log color)", fontsize=11)
+    ax.set_title(
+        "Deployment mode matrix - speedup vs native ds4 (log color)\n"
+        "Native + native_cold rows shown as 1.0x / 0.99x anchor; wkv rows colored relative to native",
+        fontsize=10,
+    )
     for i in range(len(modes)):
         for j in range(len(policies)):
             v = grid[i, j]
@@ -531,21 +555,36 @@ def chart_public_workloads():
         labels = [r["mode"] for r in ordered]
         ttfts = [float(r["ttft_p50_ms"]) for r in ordered]
         speedups = [float(r["speedup_vs_native_ttft"]) for r in ordered]
-        colors = []
+        colors, hatches, edges, edge_widths = [], [], [], []
         for r, sp in zip(ordered, speedups):
-            if r["mode"] in ("native", "native_cold"):
-                colors.append(NEUTRAL_COLOR)
+            if r["mode"] == "native":
+                colors.append("#4a4a4a")
+                hatches.append("//")
+                edges.append("black")
+                edge_widths.append(1.6)
+            elif r["mode"] == "native_cold":
+                colors.append("#7a7a7a")
+                hatches.append("\\\\")
+                edges.append("black")
+                edge_widths.append(1.6)
             else:
                 colors.append(_color_for_speedup(sp))
+                hatches.append("")
+                edges.append("none")
+                edge_widths.append(0)
 
+        native_ttft_val = float(native_row["ttft_p50_ms"]) if native_row else None
         fig, ax = plt.subplots(figsize=(WIDTH_INCHES, 5.0))
-        bars = ax.bar(range(len(labels)), ttfts, color=colors)
+        bars = ax.bar(range(len(labels)), ttfts, color=colors,
+                      edgecolor=edges, linewidth=edge_widths, hatch=hatches)
+        if native_ttft_val:
+            ax.axhline(native_ttft_val, color="#4a4a4a", linestyle="--",
+                       linewidth=1.2, alpha=0.5, zorder=0)
         ax.set_yscale("log")
-        ax.set_ylabel("TTFT p50 (ms, log scale)")
+        ax.set_ylabel("TTFT p50 (ms, log scale; lower is better)")
         ax.set_xticks(range(len(labels)))
         ax.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
-        n_trials = scen_rows[0].get("n_trials", "?")
-        title = f"{scenario.replace('_', ' ')}, absolute TTFT, native baseline vs WombatKV modes"
+        title = f"{scenario.replace('_', ' ')}: native ds4 baseline (hatched) vs WombatKV modes"
         ax.set_title(title, fontsize=11)
         ax.grid(axis="y", alpha=0.3)
         for bar, t, r, sp in zip(bars, ttfts, ordered, speedups):
@@ -558,6 +597,28 @@ def chart_public_workloads():
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.06,
                     label, ha="center", va="bottom", fontsize=9, fontweight="bold")
         ax.set_ylim(top=max(ttfts) * 3.0)
+        from matplotlib.patches import Patch
+        from matplotlib.lines import Line2D
+        legend_items = [
+            Patch(facecolor="#4a4a4a", edgecolor="black", linewidth=1.6, hatch="//",
+                  label="native ds4 (kv-disk path, baseline)"),
+        ]
+        if native_cold_row:
+            legend_items.append(Patch(facecolor="#7a7a7a", edgecolor="black", linewidth=1.6, hatch="\\\\",
+                                      label="native_cold (kv-disk disabled)"))
+        wkv_speedups = [sp for r, sp in zip(ordered, speedups) if r["mode"] not in ("native", "native_cold")]
+        if any(s >= 5 for s in wkv_speedups):
+            legend_items.append(Patch(facecolor=WIN_COLOR, label="WombatKV WIN (>= 5x)"))
+        if any(1.5 <= s < 5 for s in wkv_speedups):
+            legend_items.append(Patch(facecolor=SMALL_WIN_COLOR, label="WombatKV small WIN (1.5-5x)"))
+        if any(0.9 <= s < 1.5 for s in wkv_speedups):
+            legend_items.append(Patch(facecolor=NEUTRAL_COLOR, label="WombatKV near-parity (0.9-1.5x)"))
+        if any(s < 0.9 for s in wkv_speedups):
+            legend_items.append(Patch(facecolor=LOSS_COLOR, label="WombatKV LOSS"))
+        if native_ttft_val:
+            legend_items.append(Line2D([0], [0], color="#4a4a4a", linestyle="--", linewidth=1.2,
+                                       label=f"native ds4 ref line ({int(native_ttft_val)} ms)"))
+        ax.legend(handles=legend_items, loc="upper right", fontsize=8, framealpha=0.95)
         _save(fig, CAMPAIGN_PUBLIC_REPLAY, f"{scenario.replace('_', '-')}-speedup.png")
 
 
@@ -567,17 +628,29 @@ def chart_save_path_tax():
     labels = [r["mode"] for r in rows]
     times = [float(r["save_entry_to_exit_ms_p50"]) for r in rows]
     colors = [WIN_COLOR] + [LOSS_COLOR] * (len(times) - 1)
-    fig, ax = plt.subplots(figsize=(WIDTH_INCHES, 4.0))
+    fig, ax = plt.subplots(figsize=(WIDTH_INCHES, 5.2))
     bars = ax.bar(range(len(labels)), times, color=colors)
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
     ax.set_ylabel("Save path entry-to-exit p50 (ms)")
-    ax.set_title("Save-path tax by mode (sharegpt_round_robin, embedded baseline)", fontsize=11)
+    ax.set_title(
+        "Save-path tax by mode\n"
+        "sharegpt_round_robin, embedded_local = 1.0x WombatKV baseline (no native analog)",
+        fontsize=10,
+    )
     ax.grid(axis="y", alpha=0.3)
+    ax.set_ylim(top=max(times) * 1.18)
     for bar, t in zip(bars, times):
         mult = t / times[0] if times[0] > 0 else 1.0
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 20,
                 f"{int(t)} ms\n({mult:.1f}x)", ha="center", va="bottom", fontsize=9, fontweight="bold")
+    # Footer note: native ds4 has no save-path because kvdisk write is
+    # internal to its prefill; native is compared in the scenario charts.
+    fig.subplots_adjust(bottom=0.28)
+    fig.text(0.5, 0.02,
+             "Native ds4 has no save-path stage (kvdisk write is internal to prefill); see\n"
+             "gutenberg-multiround-speedup.png + sharegpt-round-robin-speedup.png for native TTFT comparison.",
+             ha="center", fontsize=8, style="italic", color="#555555")
     _save(fig, CAMPAIGN_PUBLIC_REPLAY, "save-path-tax-by-mode.png")
 
 
@@ -685,15 +758,25 @@ def chart_stage_breakdown_stacked():
     axR.set_xticks(range(len(modes_s)))
     axR.set_xticklabels(modes_s, rotation=15, ha="right", fontsize=9)
     axR.set_ylabel("Save path entry-to-exit p50 (ms)")
-    axR.set_title("Per-save total cost, the daemon save-tax (embedded baseline)", fontsize=10)
+    axR.set_title("Per-save total cost, daemon save-tax\n(embedded_local = 1.0x baseline)", fontsize=10)
     axR.grid(axis="y", alpha=0.3)
+    # Give the right-panel bars headroom so the title doesn't overlap the
+    # tallest bar's value annotation.
+    axR.set_ylim(top=max(times_s) * 1.18)
 
     fig.suptitle(
         "Stage-level diagnostic, why embedded beats daemon on real chat\n"
         "Restore is comparable; save-path is 6.6-8x slower under daemon",
         fontsize=11, fontweight="bold",
     )
-    fig.tight_layout(rect=[0, 0, 1, 0.94])
+    fig.tight_layout(rect=[0, 0.03, 1, 0.94])
+    # Footer note: both panels are WombatKV-internal stages; native has
+    # no analogous restore/save path. Point readers at the comparison
+    # charts for native ds4 TTFT data.
+    fig.text(0.5, 0.005,
+             "Both panels measure WombatKV-internal stages; native ds4 has no equivalent restore/save path. "
+             "See gutenberg-multiround-speedup.png + sharegpt-round-robin-speedup.png for native TTFT comparison.",
+             ha="center", fontsize=8, style="italic", color="#555555")
     _save(fig, CAMPAIGN_PUBLIC_REPLAY, "stage-breakdown-restore-vs-save.png")
 
 
