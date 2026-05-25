@@ -1,0 +1,33 @@
+[book]
+title = "WombatKV"
+description = "Object-storage-native KV cache substrate for LLM inference. Wombat has your KV blocks."
+authors = ["WombatKV contributors"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/Venkat2811/wombatkv"
+edit-url-template = "https://github.com/Venkat2811/wombatkv/edit/main/book/src/{path}"
+no-section-label = true
+mathjax-support = false
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3
