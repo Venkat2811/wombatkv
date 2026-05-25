@@ -1,0 +1,153 @@
+[package]
+name = "wombatkv-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords.workspace = true
+categories.workspace = true
+description = "WombatKV daemon binary + SHM/TCP/HTTP listeners for the daemon deployment mode. Sits between multiple engine clients (ds4, future llama.cpp, vLLM/SGLang via wire) and a shared S3 bucket."
+documentation = "https://docs.rs/wombatkv-daemon"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+bytes = "1"
+blake3 = "1"
+# CRC32C (Castagnoli) for RFC 0018 wire-envelope integrity check.
+# Same algorithm ds4 uses for its sidecar + block envelopes.
+crc32c = "0.6"
+rkyv = { version = "0.8", features = ["bytecheck"] }
+# CLI + error plumbing for the bench binaries in this crate.
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+# typed error enums via `#[derive(thiserror::Error)]`.
+# Replaces ad-hoc `Result<T, String>` in the codec / segment-name
+# paths. Existing hand-rolled error enums (Envelope, Tcp/HttpServer/
+# Client) keep their current shape until a workspace-wide sweep.
+thiserror = "1"
+serde_json = "1"
+
+# Memory-mapped shared arena for the future zero-copy data plane.
+# Internally uses unsafe; we wrap it in a tiny audited surface.
+memmap2 = "0.9"
+
+# Used for POSIX `shm_unlink` on macOS (`/dev/shm` doesn't exist),
+# `kill(pid, 0)` aliveness probes, and Linux-only `sched_setaffinity`
+# in `runtime_tpc::pin_to_cpu` (see RFC 0007 §10 P4).
+libc = "0.2"
+
+# compio, completion-based async runtime. Used by the optional
+# `runtime_tpc` module (per-shard runtime spawn) behind the
+# `--tpc` CLI flag opt-in. Pinned at 0.18 to preserve the
+# request-dispatch shape stable across patch releases. On Linux
+# compio drives io_uring; on macOS it uses kqueue, see the module
+# header in `src/runtime_tpc.rs`.
+compio = { version = "0.18", features = ["runtime", "macros", "io", "net", "time"] }
+# socket2 for SO_REUSEPORT, compio 0.18 exposes raw socket opts via
+# its underlying socket2 dep so we can opt-in to kernel-balanced N-shard
+# accept (compio per-shard SO_REUSEPORT pattern).
+socket2 = "0.6"
+# Used by the compio TCP serve path's accept-vs-shutdown race
+# (`futures::future::select` on two pinned futures).
+futures = "0.3"
+# Runtime-agnostic MPSC + bounded-MPMC channel used by the compio TCP
+# dispatch bridge (`DispatchHandle` in `tcp_transport`). Lets compio
+# shards ferry decoded `WireRequest` frames to a separate pool of
+# std::thread sync workers and `await` the response without blocking
+# the shard runtime.
+flume = "0.11"
+
+# WombatKV core stack, the daemon holds a WombatKVKvStore and serves
+# put/get/restore requests over SHM.
+wombatkv-node  = { path = "../wombatkv-node",  version = "0.1.0-alpha.pre1.0" }
+wombatkv-store = { path = "../wombatkv-store", version = "0.1.0-alpha.pre1.0" }
+# Block-shaped surfaces (LOOKUP_BLOCK_PREFIX / GET_KV_BLOCKS_BATCH /
+# PUT_KV_BLOCKS_BATCH) update and query the daemon's metadata index,
+# so the daemon binary needs `MetadataIndex` + `BlockMeta` in scope.
+wombatkv-radix = { path = "../wombatkv-radix", version = "0.1.0-alpha.pre1.0" }
+
+# Myelon transport: 1P-1C zero-copy disruptor-style ring over POSIX SHM.
+# Same crate the perf-bench typed_zc layer uses (see RFC 0028).
+# myelon re-exports the disruptor-mp substrate's full surface -
+# including `portable_shm_segment_name` + `PORTABLE_SHM_SEGMENT_NAME_MAX_LEN` -
+# so wombatkv-daemon does NOT depend on disruptor-mp directly. Single
+# layering boundary kept clean. Pinned to the published OSS alpha.
+myelon = { version = "0.1.0-alpha.2", features = ["rkyv"] }
+
+# Deterministic-simulation-testing primitives. Optional, gated on
+# `dst` feature. In non-DST builds the dep is not compiled and all
+# buggify call sites compile away.
+wombatkv-dst = { path = "../wombatkv-dst", optional = true }
+
+[features]
+default = []
+# Enables DST chaos sites in the daemon (request-handler delay
+# injection, future failure modes). Activate with:
+#     cargo build -p wombatkv-daemon --features dst
+dst = ["dep:wombatkv-dst"]
+
+[lib]
+name = "wombatkv_daemon"
+
+[[bin]]
+name = "wombatkv-daemon"
+path = "src/bin/wombatkv-daemon.rs"
+
+# Bench + operator-utility binaries that exercise the daemon transport
+# (wombatkv-shm-bench, -load-bench, -tcp-smoke, -tcp-multi-load-bench,
+# -dst-driver, etc.) live in `crates/wombatkv-bench/`. This crate now
+# only ships the production daemon binary.
+
+[dev-dependencies]
+tempfile = "3"
+
+# Downgrades `unsafe_code` from `forbid` to `deny` so the arena module
+# can wrap memmap2's `unsafe fn map_mut` / `unsafe fn map` in audited
+# `#[allow]` sites. We can't use `[lints] workspace = true` here
+# because we need to override unsafe_code. Workspace clippy allows are
+# mirrored locally, keep in sync with root Cargo.toml.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+missing_safety_doc = "allow"
+doc_markdown = "allow"
+must_use_candidate = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
+needless_pass_by_value = "allow"
+too_many_arguments = "allow"
+too_many_lines = "allow"
+similar_names = "allow"
+items_after_statements = "allow"
+manual_let_else = "allow"
+format_push_string = "allow"
+field_reassign_with_default = "allow"
+unreadable_literal = "allow"
+unused_self = "allow"
+unnecessary_wraps = "allow"
+collapsible_if = "allow"
+collapsible_else_if = "allow"
+# Rust 1.95+ pedantic; allow workspace-wide (mirror of root Cargo.toml).
+unnecessary_debug_formatting = "allow"
+doc_lazy_continuation = "allow"
+doc_overindented_list_items = "allow"
+assigning_clones = "allow"
+map_unwrap_or = "allow"
+uninlined_format_args = "allow"
+used_underscore_binding = "allow"
+default_trait_access = "allow"
+needless_range_loop = "allow"
