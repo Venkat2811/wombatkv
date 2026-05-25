@@ -1,0 +1,24 @@
+[package]
+name = "wombatkv-format"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords.workspace = true
+categories.workspace = true
+description = "Wire-format codecs for WombatKV: 16-byte universal envelope (magic + version + CRC32C + len per RFC 0018), blake3 chain hashing, rkyv archive helpers. Internal to the wombatkv-* workspace; consumers should depend on wombatkv-cabi or wombatkv-node."
+documentation = "https://docs.rs/wombatkv-format"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+
+[lints]
+workspace = true
