@@ -1,0 +1,10 @@
+scenario,variant,mode,n_trials,native_ttft_ms_p50,wombat_ttft_ms_p50,speedup_vs_native,status,notes
+pi_review,preserved,c1_native,2,23932.2,,1.00,BASELINE,5 concurrent agents on one ds4-server; preserved kvdisk
+pi_review,preserved,c2_embedded,2,23932.2,36670.8,0.65,LOSS,save/load overhead dominates
+pi_review,preserved,c3_daemon,2,23932.2,107378.8,0.22,LOSS,daemon catastrophic on interleaved fan-out
+pi_review,wiped,c1_native,2,23238.9,,1.00,BASELINE,kvdisk wiped between trials
+pi_review,wiped,c2_embedded,2,23238.9,32173.3,0.72,LOSS,
+pi_review,wiped,c3_daemon,2,23238.9,81938.9,0.28,LOSS,
+conversation_switch,live,c1_native,2,2814.1,,1.00,BASELINE,5 users x 5 turns round-robin; ds4 session-switch in RAM. Numbers from p95-bug-fixed rerun.
+conversation_switch,live,c2_embedded,2,2814.1,21643.0,0.13,LOSS,WombatKV adds save/load on each switch; p95-bug-fixed rerun much worse than initial pass
+conversation_switch,live,c3_daemon,2,2814.1,27061.2,0.10,LOSS,daemon switch path very slow
