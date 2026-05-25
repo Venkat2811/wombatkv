@@ -1,0 +1,78 @@
+# Two-container demo: Dev1 + Dev2 on one Mac, sharing a single MinIO bucket.
+# See README.md for the launch storyboard and what you should observe in the
+# logs.
+#
+# Usage:
+#   docker compose up                      # starts MinIO + both ds4-server-wombatkv
+#   docker compose exec dev1 pi            # in another terminal. Dev1's pi shell
+#   docker compose exec dev2 pi            # in a third terminal. Dev2 inherits warm prefix
+#
+# Both containers point at the SAME WMBT_KV_BUCKET so Dev2's first turn warm-
+# hits the prefix Dev1 just prefilled. This is the cross-teammate demo with
+# zero network setup beyond docker-compose's default bridge.
+
+services:
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+
+  # Pre-create the bucket once MinIO is healthy.
+  bucket-init:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        mc alias set local http://minio:9000 minio minio123 &&
+        mc mb --ignore-existing local/wombatkv-team-alpha &&
+        echo bucket ready
+      "
+    restart: "no"
+
+  dev1:
+    image: wombatkv/ds4:latest
+    depends_on:
+      bucket-init:
+        condition: service_completed_successfully
+    environment:
+      # All Dev1 + Dev2 env identical, same bucket, same model, same engine.
+      DS4_WOMBATKV_ENABLE: "1"
+      WMBT_KV_BUCKET: "wombatkv-team-alpha"
+      WMBT_KV_S3_ENDPOINT: "http://minio:9000"
+      WMBT_KV_S3_ACCESS_KEY: "minio"
+      WMBT_KV_S3_SECRET_KEY: "minio123"
+    ports:
+      - "8000:8000"        # Dev1's ds4-server listens here for pi
+    command: ["ds4-server", "--ctx", "32768", "--kv-disk-dir", "/tmp/dev1-kv"]
+
+  dev2:
+    image: wombatkv/ds4:latest
+    depends_on:
+      bucket-init:
+        condition: service_completed_successfully
+    environment:
+      DS4_WOMBATKV_ENABLE: "1"
+      WMBT_KV_BUCKET: "wombatkv-team-alpha"    # SAME bucket, this is the demo
+      WMBT_KV_S3_ENDPOINT: "http://minio:9000"
+      WMBT_KV_S3_ACCESS_KEY: "minio"
+      WMBT_KV_S3_SECRET_KEY: "minio123"
+    ports:
+      - "8001:8000"        # Dev2's ds4-server on host port 8001
+    command: ["ds4-server", "--ctx", "32768", "--kv-disk-dir", "/tmp/dev2-kv"]
+
+volumes:
+  minio_data:
