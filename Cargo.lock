@@ -4526,7 +4526,7 @@ dependencies = [
 name = "wombatkv-store"
 version = "0.1.0-alpha.pre1.0"
 dependencies = [
- "http 0.2.12",
+ "http 1.4.0",
  "rust-s3",
  "serde_json",
  "tokio",

@@ -18,7 +18,7 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-http = "0.2"
+http = "1.4"
 serde_json = "1.0"
 s3 = { package = "rust-s3", version = "0.35.1", default-features = false, features = ["use-tokio-native-tls"] }
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "time"] }
