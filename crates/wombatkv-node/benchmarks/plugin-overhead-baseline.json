@@ -1,0 +1,17 @@
+{
+  "task": "plugin-overhead-budget",
+  "baseline_host": "m3-max-macos-arm64",
+  "generated_at_utc": "2026-02-23T00:26:49Z",
+  "iterations": 12000,
+  "workload_iterations": 6000,
+  "measurements": {
+    "dispatch_round_robin_ns_per_op": 9469,
+    "dispatch_fifo_ns_per_op": 7172,
+    "dispatch_overhead_pct_vs_round_robin": -24.258105396557188,
+    "policy_engine_decide_ns_per_call": 449,
+    "policy_always_fetch_ns_per_call": 112,
+    "policy_overhead_pct_vs_always_fetch": 300.89285714285717,
+    "prefetch_workload_dispatch_p50_ns": 6542,
+    "prefetch_workload_dispatch_p95_ns": 10417
+  }
+}
