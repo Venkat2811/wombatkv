@@ -61,7 +61,7 @@ default = []
 dst = ["dep:wombatkv-dst"]
 
 [dev-dependencies]
-bincode = "1"
+bincode = "3"
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 

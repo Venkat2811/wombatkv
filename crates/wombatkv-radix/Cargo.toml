@@ -40,7 +40,7 @@ tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros"] }
 # older builds (bincode under `b"v001"` ... if anyone had written one;
 # v001 was never shipped in main, so in practice on-disk migration is a
 # best-effort cold-miss → S3 refetch).
-bincode = "1"
+bincode = "3"
 serde = { version = "1", features = ["derive"] }
 rkyv = { version = "0.8", features = ["bytecheck"] }
 
