@@ -9,11 +9,6 @@ repository.workspace = true
 homepage.workspace = true
 readme = "README.md"
 description = "Deterministic simulation testing (DST) primitives for WombatKV. Draws on the DST patterns shipped in the myelon crate (github.com/Venkat2811/myelon)."
-# Internal-only crate. DST scaffolding doesn't ship to crates.io, it's
-# referenced by wombatkv-{node,daemon,bench} via cfg-gated dev-dependencies
-# and via `cargo run -p wombatkv-dst --bin wombatkv-dst-runner` for the
-# seed-sweep harness.
-publish = false
 
 [lib]
 name = "wombatkv_dst"

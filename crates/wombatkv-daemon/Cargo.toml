@@ -84,7 +84,7 @@ myelon = { version = "0.1.0-alpha.2", features = ["rkyv"] }
 # Deterministic-simulation-testing primitives. Optional, gated on
 # `dst` feature. In non-DST builds the dep is not compiled and all
 # buggify call sites compile away.
-wombatkv-dst = { path = "../wombatkv-dst", optional = true }
+wombatkv-dst = { path = "../wombatkv-dst", version = "0.1.0-alpha.pre1.0", optional = true }
 
 [features]
 default = []
