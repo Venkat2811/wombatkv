@@ -20,6 +20,12 @@ single-harness, single-engine campaign.
 | Trials per cell | n=5 (canonical restart_*), n=3 (canonical same_process), n=8 (ShareGPT), n=2 (partial-prefix + scenarios) |
 | Warmup protocol | After each restart, a small `max_tokens=1` warmup request primes Metal kernel JIT before turn-2 measurement. Same-process cells skip warmup. |
 
+**Dataset provenance:** the canonical prompt is excerpted from Project
+Gutenberg eBook #1184 (public domain). `sharegpt_min1k_50.jsonl` is a
+50-row filtered subset of the openly redistributed ShareGPT public
+conversation dump. No gated corpora, no proprietary datasets, no
+third-party API responses.
+
 ## Charts
 
 ### Cross-restart wiped, speedup by mode

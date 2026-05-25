@@ -18,6 +18,12 @@ matrix campaign.
 | Trials | n=2 ShareGPT native + native_cold + embedded_local; n=1 ShareGPT daemon modes + Gutenberg; n=8 transport bench |
 | Transport bench | `wombatkv-tcp-multi-load-bench`, 8 clients × 200 ops × 4096-byte payload |
 
+**Dataset provenance:** `sharegpt_conv_16_mt4_8.json` is a 16-conversation
+filtered subset of the openly redistributed ShareGPT public conversation
+dump (we use the first 8). The Gutenberg corpus is excerpted from
+Project Gutenberg eBook #1184 (public domain). No gated corpora, no
+proprietary datasets, no third-party API responses.
+
 ## Charts
 
 ### ShareGPT round-robin: TTFT speedup

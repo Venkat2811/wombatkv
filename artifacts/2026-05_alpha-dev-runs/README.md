@@ -6,7 +6,6 @@ the engineering iteration that produced the 0.1.0-alpha integration.
 
 ## Provenance
 
-- Source corpus: development bench output across the ds4 fork's development branch + WombatKV late-alpha runs.
 - Date range: 2026-05-13 through 2026-05-22.
 - Harness: `ds4/scripts/multi_trial_bench.py`, `ds4/scripts/multi_conv_bench.py`, `ds4/scripts/mode_smoke.py` (and a few one-off shell drivers).
 - Hardware: M3 Max for most rows; a Linux x86_64 test host for the cross-host paths.
@@ -15,6 +14,25 @@ These rows are NOT the canonical headline campaign for the launch.
 For that see [`../2026-05-24_deployment-mode-matrix/`](../2026-05-24_deployment-mode-matrix/).
 The alpha-dev rows are kept because they're the historical evidence
 that the system worked end-to-end during development.
+
+## Datasets, prompts, model
+
+| Field | Value |
+|---|---|
+| Model | `DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix.gguf` (ds4 default) |
+| Context window | 32768 tokens |
+| Canonical 1.7k-tok prompt | Project Gutenberg #1184 excerpt (public domain) |
+| Canonical 4.8k-tok prompt | Project Gutenberg #1184 excerpt, longer slice |
+| Cross-conversation 9.7k-tok shared doc | Project Gutenberg #1184 first ~31k chars (one document shared across 5 conversations × 5 turns) |
+| Cross-host 1.3k-tok prompt | Project Gutenberg #1184 short excerpt (same family, smaller slice, for the LAN diagnostic) |
+| pi-review fixture | A synthetic 5-agent code-review scenario over a single PR-shaped fixture (internal to ds4 bench harness, not derived from external corpora) |
+| Storage | MinIO loopback (Docker) for the same-host runs; MinIO over WiFi LAN for cross-host runs |
+| Decode budget | `max_tokens=256` for the canonical scenarios; lower for the multi-conv per-turn measurements |
+
+All prompts are derived from public-domain Project Gutenberg text; no
+gated corpora, no proprietary datasets, no third-party API responses
+were used in these rows. The pi-review fixture is a synthetic
+PR-shape generator that lives in the ds4 fork's bench scripts.
 
 ## Charts
 
