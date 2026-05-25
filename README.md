@@ -398,7 +398,7 @@ WombatKV stands on the shoulders of these projects and the people behind them:
 - [`ovg-project/kvcached`](https://github.com/ovg-project/kvcached): engine-integration template.
 - [`pi.dev`](https://pi.dev) by mitsuhiko: agent harness used in `examples/pi_ds4_wombatkv/`.
 
-Built with [![Codex](https://img.shields.io/badge/-Codex-121212?style=flat-square&logo=openai&logoColor=white)](https://openai.com/codex) [![Claude Code](https://img.shields.io/badge/-Claude%20Code-000000?style=flat-square&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-code) (`git log --grep "Co-Authored-By: Claude"` and `--grep "Co-Authored-By: Codex"` for the breakdown).
+Built with Agentic engineering, using: [![Codex](https://img.shields.io/badge/-Codex-121212?style=flat-square&logo=openai&logoColor=white)](https://openai.com/codex) [![Claude Code](https://img.shields.io/badge/-Claude%20Code-000000?style=flat-square&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-code)
 
 ## Citation
 
