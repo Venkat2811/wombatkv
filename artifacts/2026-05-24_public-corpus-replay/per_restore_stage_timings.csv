@@ -1,0 +1,9 @@
+scenario,mode,n_hits,lookup_ms_p50,get_ms_p50,load_blocks_ms_p50,sidecar_ms_p50,chain_ms_p50,entry_to_exit_ms_p50,loaded_tokens_p50,notes
+sharegpt_round_robin,embedded_local,11,0.000,34.37,1.44,5.35,0.010,74.97,512,fastest restore path
+sharegpt_round_robin,daemon_tcp_local,4,0.775,39.19,1.50,32.21,0.020,75.14,383.5,sidecar 6x slower than embedded
+sharegpt_round_robin,daemon_http_local,4,0.700,52.88,1.24,63.44,0.020,139.40,383.5,sidecar 12x slower; entry_to_exit 2x slower
+sharegpt_round_robin,daemon_shm,4,26.79,115.88,1.67,27.59,0.020,216.30,383.5,daemon-shm restore worst across the board
+gutenberg_multiround,embedded_local,17,0.010,38.14,11.66,96.22,0.030,163.33,3200,bigger sidecar reflects longer prompt
+canonical_long_prompt restart_wiped,embedded_remote,11,0.010,10.02,5.05,7.52,n/a,23.04,1478,exact restart remote MinIO; tight
+canonical_long_prompt restart_wiped,daemon_tcp_remote,11,6.660,2936.01,5.38,8.76,n/a,3380.43,1478,daemon-tcp-remote get_ms 290x slower than embedded_remote
+canonical_long_prompt restart_wiped,daemon_http_remote,11,9.450,3572.79,9.15,9.24,n/a,3602.52,1478,daemon-http-remote 357x slower get_ms
