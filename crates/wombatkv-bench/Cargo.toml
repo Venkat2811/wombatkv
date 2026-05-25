@@ -1,0 +1,86 @@
+[package]
+name = "wombatkv-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+description = "Bench + operator-utility binaries for WombatKV. Not a library, every binary stands alone, depends on the production crates via path-deps, and exists to measure or demonstrate one capability of the system."
+publish = false
+
+[lints]
+workspace = true
+
+# No library, this crate is bins-only.
+
+[dependencies]
+bytes = "1"
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+serde_json = "1"
+
+# Production crates the benches measure.
+wombatkv-node    = { path = "../wombatkv-node" }
+wombatkv-daemon  = { path = "../wombatkv-daemon" }
+wombatkv-store   = { path = "../wombatkv-store" }
+
+# Sibling transport crate, wombatkv-shm-bench builds TypedProducer /
+# TypedConsumer pairs directly against the disruptor-mp SHM ring to
+# measure the bare wire-frame round-trip cost, separate from any
+# daemon-side handling.
+myelon = { version = "0.1.0-alpha.2", features = ["rkyv"] }
+
+# DST primitives, only needed by the wombatkv-dst-driver bin.
+wombatkv-dst     = { path = "../wombatkv-dst", optional = true }
+
+[features]
+default = []
+# Enables the wombatkv-dst-driver binary (deterministic-simulation
+# fault-injection runner). Mirrors the wombatkv-daemon `dst` feature
+# so the same chaos sites compile in the daemon code path the driver
+# spawns + drives.
+dst = ["dep:wombatkv-dst", "wombatkv-daemon/dst"]
+
+[[bin]]
+name = "wombatkv-arena-bench"
+path = "src/bin/wombatkv-arena-bench.rs"
+
+[[bin]]
+name = "wombatkv-embedded-vs-daemon-bench"
+path = "src/bin/wombatkv-embedded-vs-daemon-bench.rs"
+
+[[bin]]
+name = "wombatkv-load-bench"
+path = "src/bin/wombatkv-load-bench.rs"
+
+[[bin]]
+name = "wombatkv-multi-load-bench"
+path = "src/bin/wombatkv-multi-load-bench.rs"
+
+[[bin]]
+name = "wombatkv-puffer-bench"
+path = "src/bin/wombatkv-puffer-bench.rs"
+
+[[bin]]
+name = "wombatkv-puffer-kv"
+path = "src/bin/wombatkv-puffer-kv.rs"
+
+[[bin]]
+name = "wombatkv-shm-bench"
+path = "src/bin/wombatkv-shm-bench.rs"
+
+[[bin]]
+name = "wombatkv-tcp-multi-load-bench"
+path = "src/bin/wombatkv-tcp-multi-load-bench.rs"
+
+[[bin]]
+name = "wombatkv-tcp-smoke"
+path = "src/bin/wombatkv-tcp-smoke.rs"
+
+[[bin]]
+name = "wombatkv-dst-driver"
+path = "src/bin/wombatkv-dst-driver.rs"
+required-features = ["dst"]
