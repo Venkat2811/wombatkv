@@ -1,0 +1,105 @@
+[workspace]
+# WombatKV 0.1.0-alpha public surface. The `crates/wombatkv-*` stack.
+members = [
+  "crates/wombatkv-core",
+  "crates/wombatkv-radix",
+  "crates/wombatkv-store",
+  "crates/wombatkv-format",
+  "crates/wombatkv-node",
+  "crates/wombatkv-cabi",
+  "crates/wombatkv-daemon",
+  "crates/wombatkv-dst",
+  "crates/wombatkv-bench",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+version = "0.1.0-alpha.pre1.0"
+authors = ["Venkat Raman <vraman2811@gmail.com>", "WombatKV Contributors"]
+rust-version = "1.95.0"
+repository = "https://github.com/Venkat2811/wombatkv"
+homepage = "https://github.com/Venkat2811/wombatkv"
+readme = "README.md"
+# crates.io enforces: max 5 keywords, ≤20 chars each, ASCII alphanumeric +
+# `-`/`_`, must start with a letter. Categories must be exact slugs from
+# https://crates.io/category_slugs (invalid slugs are silently dropped).
+keywords = ["kv-cache", "llm", "object-storage", "inference", "cache"]
+categories = ["caching", "database-implementations", "concurrency"]
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# === pedantic lints kept ===
+# (all not explicitly downgraded below)
+#
+# === pedantic lints downgraded to allow, design-intentional ===
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+# wombatkv-cabi is the FFI boundary; the `# Safety` doc lives in
+# the C header, not the Rust source. Allow workspace-wide so the
+# cabi crate doesn't need a local override.
+missing_safety_doc = "allow"
+# RFC-style prose in module comments uses unbacticked terms that
+# clippy reads as missing-code-markup, too noisy for our crate
+# docs which are deliberately literate.
+doc_markdown = "allow"
+# Internal builders / impls don't need to surface #[must_use].
+must_use_candidate = "allow"
+# We intentionally use f64 for timing / throughput / latency math.
+# Precision loss on usize→f64 / u64→f64 is acceptable because the
+# values are bench / instrumentation stats, not load-bearing math.
+cast_precision_loss = "allow"
+# Truncation casts (usize→u32, u64→u32) are intentional in size /
+# length contexts where the value is bounded by protocol limits
+# (block_tokens ≤ 65535, prompt_bytes ≤ 4 GiB, etc.). Bare `as` is
+# the idiom; switching to `try_into().unwrap()` adds noise without
+# catching real bugs.
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
+# Callback / config-struct APIs intentionally take their args by
+# value to convey ownership transfer.
+needless_pass_by_value = "allow"
+# Long argument lists are by design on the FFI / config constructors.
+too_many_arguments = "allow"
+# The session-sync and load paths are unavoidably long; cutting them
+# up obscures the linear control flow.
+too_many_lines = "allow"
+# Bench / test names sometimes collide intentionally.
+similar_names = "allow"
+# Items-after-statements is sometimes clearer.
+items_after_statements = "allow"
+# `match Some(x) { Some(x) => .., None => return }` is clear; the
+# `let Some(x) = .. else { return };` form is fine too. Both are
+# fine, don't churn the codebase over this.
+manual_let_else = "allow"
+# `s.push_str(&format!(..))` is idiomatic; `write!(&mut s, ..)` is
+# perf-equivalent but noisier in stream-building code.
+format_push_string = "allow"
+# `let mut s = T::default(); s.field = v;` is sometimes clearer than
+# the `T { field: v, ..Default::default() }` initializer (especially
+# with optional / computed fields).
+field_reassign_with_default = "allow"
+# `100000` reads fine without underscore separators in size literals.
+unreadable_literal = "allow"
+# Trait stubs and self-typed methods sometimes don't read `self`.
+unused_self = "allow"
+# `fn foo() -> Result<(), E>` that never returns Err is fine, leaves
+# room for future fallibility without breaking call sites.
+unnecessary_wraps = "allow"
+# `if let Some(x) = .. { code with x }` reads cleanly when collapsed
+# would obscure intent.
+collapsible_if = "allow"
+collapsible_else_if = "allow"
+# Rust 1.95+ promoted these to pedantic; both are pure-stylistic and
+# noisy across our codebase (lots of `format!("...{path:?}...")` for
+# error messages where switching to `.display()` strips the quoting
+# context). Allow workspace-wide.
+unnecessary_debug_formatting = "allow"
+doc_lazy_continuation = "allow"
+doc_overindented_list_items = "allow"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
