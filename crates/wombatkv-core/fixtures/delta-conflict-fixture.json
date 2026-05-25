@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "name": "seeded-conflict-observability",
+  "deltas": [
+    {
+      "schema_version": 1,
+      "epoch_ms": 1700000000100,
+      "seq": 1,
+      "tenant_id": "tenant-a",
+      "fingerprint": "fp-1",
+      "prefix_hash": "h-1",
+      "payload_digest": "digest-a",
+      "write_id": "w-1"
+    },
+    {
+      "schema_version": 1,
+      "epoch_ms": 1700000000101,
+      "seq": 1,
+      "tenant_id": "tenant-a",
+      "fingerprint": "fp-1",
+      "prefix_hash": "h-1",
+      "payload_digest": "digest-a",
+      "write_id": "w-2"
+    },
+    {
+      "schema_version": 1,
+      "epoch_ms": 1700000000102,
+      "seq": 1,
+      "tenant_id": "tenant-a",
+      "fingerprint": "fp-1",
+      "prefix_hash": "h-1",
+      "payload_digest": "digest-b",
+      "write_id": "w-3"
+    },
+    {
+      "schema_version": 1,
+      "epoch_ms": 1700000000200,
+      "seq": 1,
+      "tenant_id": "tenant-b",
+      "fingerprint": "fp-2",
+      "prefix_hash": "h-2",
+      "payload_digest": "digest-c",
+      "write_id": "w-4"
+    },
+    {
+      "schema_version": 1,
+      "epoch_ms": 1700000000201,
+      "seq": 1,
+      "tenant_id": "tenant-b",
+      "fingerprint": "fp-2",
+      "prefix_hash": "h-2",
+      "payload_digest": "digest-d",
+      "write_id": "w-5"
+    }
+  ]
+}
