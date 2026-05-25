@@ -63,7 +63,7 @@ futures = "0.3"
 # std::thread sync workers and `await` the response without blocking
 # the shard runtime, the missing piece the prior playground's `bridge.rs`
 # exposes for non-blocking dispatch behind the compio shards.
-flume = "0.11"
+flume = "0.12"
 
 # WombatKV core stack, the daemon holds a WombatKVKvStore and serves
 # put/get/restore requests over SHM.
