@@ -1,0 +1,24 @@
+name: store-minio-integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  store-minio:
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run live MinIO integration
+        run: make store-minio-integration
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-minio-integration-artifacts
+          path: |
+            target/wombatkv-store-integration-report.json
+            target/wombatkv-store-integration-report.md
+            target/wombatkv-store-cargo-test.log

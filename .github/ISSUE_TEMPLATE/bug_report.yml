@@ -1,0 +1,90 @@
+name: Bug report
+description: Report a defect in a wombatkv-* crate, the daemon, the C ABI, or the DST harness.
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a defect. If this issue describes a vulnerability, please follow SECURITY.md instead of opening a public issue.
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Which crate is affected?
+      options:
+        - wombatkv-cabi
+        - wombatkv-daemon
+        - wombatkv-node
+        - wombatkv-radix
+        - wombatkv-store
+        - wombatkv-format
+        - wombatkv-core
+        - wombatkv-dst
+        - wombatkv-bench
+        - other / unsure
+  - type: input
+    id: crate-version
+    attributes:
+      label: Crate version
+      placeholder: "0.1.0-alpha.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which mode is affected?
+      options:
+        - Embedded (in-process libwombatkv)
+        - Daemon-SHM (same-host disruptor ring)
+        - Daemon-TCP (cross-host rkyv-over-TCP)
+        - Daemon-HTTP (cross-host rkyv-in-HTTP-POST)
+        - not applicable
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - macOS
+        - other
+  - type: input
+    id: rustc-version
+    attributes:
+      label: rustc --version output
+    validations:
+      required: true
+  - type: input
+    id: engine
+    attributes:
+      label: Inference engine (if applicable)
+      placeholder: "ds4 commit SHA / llama.cpp / Ollama / other"
+  - type: textarea
+    id: minimal-reproduction
+    attributes:
+      label: Minimal reproduction
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behaviour
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: env-vars
+    attributes:
+      label: Relevant WMBT_KV_* env vars
+      description: Paste your WMBT_KV_* env (redact credentials).
+      render: shell
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Daemon log, backtrace, S3 backend details (MinIO version, AWS region), ulimits, anything else relevant.
