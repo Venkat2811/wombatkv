@@ -4463,7 +4463,7 @@ dependencies = [
  "serde_json",
  "socket2 0.6.2",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "wombatkv-dst",
  "wombatkv-node",
  "wombatkv-radix",
