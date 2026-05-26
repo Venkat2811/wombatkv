@@ -30,7 +30,7 @@ bytes = "1"
 foyer = "0.22"
 once_cell = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
-twox-hash = "1"
+twox-hash = "2"
 blake3 = "1"
 
 # rkyv 0.8 for the chunked-manifest on-wire format (RFC 0008 §4e). The

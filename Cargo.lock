@@ -945,7 +945,7 @@ dependencies = [
  "parking_lot",
  "pin-project",
  "serde",
- "twox-hash 2.1.2",
+ "twox-hash",
 ]
 
 [[package]]
@@ -1011,7 +1011,7 @@ dependencies = [
  "rand 0.9.4",
  "serde",
  "tracing",
- "twox-hash 2.1.2",
+ "twox-hash",
  "zstd",
 ]
 
@@ -3602,17 +3602,6 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "twox-hash"
-version = "1.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
-dependencies = [
- "cfg-if",
- "rand 0.8.6",
- "static_assertions",
-]
-
-[[package]]
-name = "twox-hash"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea3136b675547379c4bd395ca6b938e5ad3c3d20fad76e7fe85f9e0d011419c"
@@ -4501,7 +4490,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
- "twox-hash 1.6.3",
+ "twox-hash",
  "wombatkv-core",
  "wombatkv-dst",
  "wombatkv-format",
