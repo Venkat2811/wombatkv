@@ -230,16 +230,16 @@ checksum = "843867be96c8daad0d758b57df9392b6d8d271134fce549de6ce169ff98a92af"
 
 [[package]]
 name = "blake3"
-version = "1.8.3"
+version = "1.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2468ef7d57b3fb7e16b576e8377cdbde2320c60e1491e961d11da40fc4f02a2d"
+checksum = "0aa83c34e62843d924f905e0f5c866eb1dd6545fc4d719e803d9ba6030371fce"
 dependencies = [
  "arrayref",
  "arrayvec",
  "cc",
  "cfg-if",
  "constant_time_eq",
- "cpufeatures",
+ "cpufeatures 0.3.0",
 ]
 
 [[package]]
@@ -433,7 +433,7 @@ dependencies = [
  "polling",
  "slab",
  "smallvec",
- "socket2 0.6.2",
+ "socket2 0.6.4",
  "synchrony",
  "thin-cell",
  "windows-sys 0.61.2",
@@ -486,7 +486,7 @@ dependencies = [
  "either",
  "libc",
  "once_cell",
- "socket2 0.6.2",
+ "socket2 0.6.4",
  "widestring",
  "windows-sys 0.61.2",
 ]
@@ -510,7 +510,7 @@ dependencies = [
  "pin-project-lite",
  "scoped-tls",
  "slab",
- "socket2 0.6.2",
+ "socket2 0.6.4",
  "windows-sys 0.61.2",
 ]
 
@@ -581,6 +581,15 @@ name = "cpufeatures"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59ed5838eebb26a2bb2e58f6d5b5316989ae9d08bab10e0e6d103e656d1b0280"
+dependencies = [
+ "libc",
+]
+
+[[package]]
+name = "cpufeatures"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b2a41393f66f16b0823bb79094d54ac5fbd34ab292ddafb9a0456ac9f87d201"
 dependencies = [
  "libc",
 ]
@@ -1460,7 +1469,7 @@ dependencies = [
  "libc",
  "percent-encoding",
  "pin-project-lite",
- "socket2 0.6.2",
+ "socket2 0.5.10",
  "tokio",
  "tower-service",
  "tracing",
@@ -2071,9 +2080,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.3"
+version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "once_cell_polyfill"
@@ -2399,7 +2408,7 @@ dependencies = [
  "quinn-udp",
  "rustc-hash",
  "rustls",
- "socket2 0.6.2",
+ "socket2 0.5.10",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
@@ -2436,7 +2445,7 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "once_cell",
- "socket2 0.6.2",
+ "socket2 0.5.10",
  "tracing",
  "windows-sys 0.60.2",
 ]
@@ -2903,9 +2912,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.149"
+version = "1.0.150"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83fc039473c5595ace860d8c4fafa220ff474b3fc6bfdb4293327f1a37e94d86"
+checksum = "e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9"
 dependencies = [
  "itoa",
  "memchr",
@@ -2955,7 +2964,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
 dependencies = [
  "cfg-if",
- "cpufeatures",
+ "cpufeatures 0.2.17",
  "digest",
 ]
 
@@ -3017,9 +3026,9 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "slatedb"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "286ec5657d17f3ba70c060becd57a5550ad43973b8480811ad27d3fa4d620a49"
+checksum = "f77abe3a47e3d669877cc9c83c5e853cb34d250cd1953ede8308b69e04e32c9d"
 dependencies = [
  "async-channel",
  "async-trait",
@@ -3064,9 +3073,9 @@ dependencies = [
 
 [[package]]
 name = "slatedb-common"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9caca0e37a5bc4c65c61143cdd9674faa6b9f69f76a02e1edc94d8e2a6da414a"
+checksum = "396a08a34b93becfc72e7d7286f620ac887b48ad37bdaa4768b024df7c0ea7f5"
 dependencies = [
  "chrono",
  "log",
@@ -3076,9 +3085,9 @@ dependencies = [
 
 [[package]]
 name = "slatedb-txn-obj"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9bd80ee7b7f7da1fd4ada17fcf6ee564e76af71254e8189e68bf497856557aa"
+checksum = "37172cf2255b0f0c56f0d2e98dbc865b2f6dd56333ed297147e9bba5d9ecf97a"
 dependencies = [
  "async-trait",
  "bytes",
@@ -3114,12 +3123,12 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.6.2"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86f4aa3ad99f2088c990dfa82d367e19cb29268ed67c574d10d0a4bfe71f07e0"
+checksum = "52d1cfed4120b4d927bf7c0f86d2087a4a7d6027c906d9f9d525a80573b9be51"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -3354,7 +3363,7 @@ dependencies = [
  "mio",
  "pin-project-lite",
  "signal-hook-registry",
- "socket2 0.6.2",
+ "socket2 0.6.4",
  "tokio-macros",
  "windows-sys 0.61.2",
 ]
@@ -4461,7 +4470,7 @@ dependencies = [
  "myelon",
  "rkyv",
  "serde_json",
- "socket2 0.6.2",
+ "socket2 0.6.4",
  "tempfile",
  "thiserror 1.0.69",
  "wombatkv-dst",

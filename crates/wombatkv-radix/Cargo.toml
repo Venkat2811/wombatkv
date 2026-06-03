@@ -23,7 +23,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 # compaction set (RFC-0023/24/25) we lean on for §6 cold-bootstrap and §3
 # point-read performance budgets. Default features include `aws` (S3 backend)
 # and `foyer` (block cache); both are part of the production deployment path.
-slatedb = "=0.13.0"
+slatedb = "=0.13.1"
 
 # Async runtime needed by slatedb. We embed a per-instance current-thread
 # runtime in SlateDbMetadataIndex so the sync MetadataIndex trait can keep
